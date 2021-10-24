@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Battery80</string>
+    <string name="battery_status">Status</string>
+    <string name="battery_level">0–100%</string>
 </resources>
