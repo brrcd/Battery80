@@ -4,9 +4,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
+import android.util.Log
+import com.example.battery80.App.Companion.appContext
+import com.example.battery80.BatteryService.Companion.ACTION_STOP_SERVICE
 
 class BatteryBroadcastReceiver: BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(context: Context, intent: Intent?) {
+        Log.v("_TEST", "broadcast received")
+
+        val serviceIntent = Intent(appContext, BatteryService::class.java)
+        context.startForegroundService(serviceIntent)
+
         val status: Int = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
         val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
                 || status == BatteryManager.BATTERY_STATUS_FULL

@@ -37,6 +37,7 @@ class BatteryService: Service() {
         {
             stopForeground(true)
             stopSelf()
+            Log.v("_TEST", "stop service")
         }
         return START_NOT_STICKY
     }
