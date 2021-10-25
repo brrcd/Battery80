@@ -12,9 +12,6 @@ class BatteryBroadcastReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         Log.v("_TEST", "broadcast received")
 
-        val serviceIntent = Intent(appContext, BatteryService::class.java)
-        context.startForegroundService(serviceIntent)
-
         val status: Int = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
         val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
                 || status == BatteryManager.BATTERY_STATUS_FULL
@@ -24,6 +21,11 @@ class BatteryBroadcastReceiver: BroadcastReceiver() {
             val scale: Int = it.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
             level * 100 / scale
         }
+
+        val serviceIntent = Intent(appContext, BatteryService::class.java)
+        serviceIntent.putExtra("title", "$isCharging")
+        serviceIntent.putExtra("text", "$batteryPct")
+        context.startForegroundService(serviceIntent)
 
         if (isCharging && batteryPct == 80) {
 

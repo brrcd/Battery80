@@ -22,10 +22,11 @@ class BatteryService: Service() {
             0,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
+        val title: String? = intent?.getStringExtra("title")
+        val text: String? = intent?.getStringExtra("text")
 
         val notification: Notification = Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("title")
-            .setContentText("test")
+            .setContentTitle("$title - $text")
             .setSmallIcon(R.drawable.ic_battery_full)
             .setContentIntent(pendingIntent)
             .build()
