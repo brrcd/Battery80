@@ -20,19 +20,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        receiver = BatteryBroadcastReceiver()
+
         registerReceiver(receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        val stopIntent = Intent(appContext, BatteryService::class.java)
-        stopIntent.action = ACTION_STOP_SERVICE
-        startForegroundService(stopIntent)
-
+        //TODO FIXME app does not closing
         if (receiver != null) {
             unregisterReceiver(receiver)
         }
+
+        val stopIntent = Intent(appContext, BatteryService::class.java)
+        stopIntent.action = ACTION_STOP_SERVICE
+        startForegroundService(stopIntent)
 
         //TODO remove
         Log.v("_TEST", "onDestroy activity")

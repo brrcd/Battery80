@@ -2,6 +2,8 @@ package com.example.battery80
 
 import android.app.*
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.IBinder
 import android.util.Log
 
@@ -17,10 +19,9 @@ class BatteryService : Service() {
         val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(this)
         stackBuilder.addNextIntentWithParentStack(launchIntent)
 
-
         val pendingIntent: PendingIntent = stackBuilder.getPendingIntent(
             0,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_CANCEL_CURRENT
         )
         val title: String? = intent.getStringExtra(NOTIFICATION_TITLE)
         val text: String? = intent.getStringExtra(NOTIFICATION_TEXT)
@@ -44,18 +45,26 @@ class BatteryService : Service() {
     }
 
     private fun createNotificationChannel(isSoundOn: Boolean) {
-        val notificationChannel = if (isSoundOn) {
-            NotificationChannel(
-                CHANNEL_ID, "name",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-        } else {
-            NotificationChannel(
-                CHANNEL_ID, "name",
-                NotificationManager.IMPORTANCE_LOW
-            )
-        }
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val audioAttributes = AudioAttributes.Builder()
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+            .build()
+
+        val notificationChannel = NotificationChannel(
+            CHANNEL_ID, "name",
+            NotificationManager.IMPORTANCE_LOW
+        )
+
+        if (isSoundOn) {
+            notificationChannel.importance = NotificationManager.IMPORTANCE_HIGH
+            notificationChannel.setSound(uri, audioAttributes)
+        } else {
+            notificationChannel.importance = NotificationManager.IMPORTANCE_LOW
+        }
+
         notificationManager.createNotificationChannel(notificationChannel)
     }
 

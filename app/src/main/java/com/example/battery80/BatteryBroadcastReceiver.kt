@@ -31,8 +31,7 @@ class BatteryBroadcastReceiver: BroadcastReceiver() {
         serviceIntent.putExtra(NOTIFICATION_TITLE, "$isCharging")
         serviceIntent.putExtra(NOTIFICATION_TEXT, "$batteryPct")
 
-
-        if (isCharging && batteryPct == 80) {
+        if (isCharging) {
             serviceIntent.putExtra(SOUND_FLAG, true)
         }
 
