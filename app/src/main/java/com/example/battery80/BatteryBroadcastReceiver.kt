@@ -5,12 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
 import android.util.Log
+import android.widget.Toast
 import com.example.battery80.App.Companion.appContext
-import com.example.battery80.BatteryService.Companion.ACTION_STOP_SERVICE
+import com.example.battery80.BatteryService.Companion.NOTIFICATION_TEXT
+import com.example.battery80.BatteryService.Companion.NOTIFICATION_TITLE
+import com.example.battery80.BatteryService.Companion.SOUND_FLAG
 
 class BatteryBroadcastReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
+        //TODO remove
         Log.v("_TEST", "broadcast received")
+        Toast.makeText(context, "broadcast", Toast.LENGTH_SHORT).show()
 
         val status: Int = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
         val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
@@ -23,12 +28,14 @@ class BatteryBroadcastReceiver: BroadcastReceiver() {
         }
 
         val serviceIntent = Intent(appContext, BatteryService::class.java)
-        serviceIntent.putExtra("title", "$isCharging")
-        serviceIntent.putExtra("text", "$batteryPct")
-        context.startForegroundService(serviceIntent)
+        serviceIntent.putExtra(NOTIFICATION_TITLE, "$isCharging")
+        serviceIntent.putExtra(NOTIFICATION_TEXT, "$batteryPct")
+
 
         if (isCharging && batteryPct == 80) {
-
+            serviceIntent.putExtra(SOUND_FLAG, true)
         }
+
+        context.startForegroundService(serviceIntent)
     }
 }

@@ -2,16 +2,16 @@ package com.example.battery80
 
 import android.app.*
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.IBinder
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.ServiceCompat.stopForeground
 
-class BatteryService: Service() {
+class BatteryService : Service() {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        createNotificationChannel()
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        val bool = intent.getBooleanExtra(SOUND_FLAG, false)
+        createNotificationChannel(intent.getBooleanExtra(SOUND_FLAG, false))
+        //TODO remove
+        Log.v("_TEST", "sound - $bool")
 
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
         val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(this)
@@ -22,8 +22,8 @@ class BatteryService: Service() {
             0,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val title: String? = intent?.getStringExtra("title")
-        val text: String? = intent?.getStringExtra("text")
+        val title: String? = intent.getStringExtra(NOTIFICATION_TITLE)
+        val text: String? = intent.getStringExtra(NOTIFICATION_TEXT)
 
         val notification: Notification = Notification.Builder(this, CHANNEL_ID)
             .setContentTitle("$title - $text")
@@ -31,21 +31,30 @@ class BatteryService: Service() {
             .setContentIntent(pendingIntent)
             .build()
 
-        startForeground(122, notification)
+        startForeground(NOTIFICATION_ID, notification)
         // on receiving stop service action intent
         // from MainActivity onDestroy method
-        if (intent?.action == ACTION_STOP_SERVICE)
-        {
+        if (intent.action == ACTION_STOP_SERVICE) {
             stopForeground(true)
             stopSelf()
+            //TODO remove
             Log.v("_TEST", "stop service")
         }
         return START_NOT_STICKY
     }
 
-    private fun createNotificationChannel() {
-        val notificationChannel = NotificationChannel(CHANNEL_ID, "name",
-        NotificationManager.IMPORTANCE_LOW)
+    private fun createNotificationChannel(isSoundOn: Boolean) {
+        val notificationChannel = if (isSoundOn) {
+            NotificationChannel(
+                CHANNEL_ID, "name",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+        } else {
+            NotificationChannel(
+                CHANNEL_ID, "name",
+                NotificationManager.IMPORTANCE_LOW
+            )
+        }
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(notificationChannel)
     }
@@ -57,5 +66,9 @@ class BatteryService: Service() {
     companion object {
         const val CHANNEL_ID = "channel id"
         const val ACTION_STOP_SERVICE = "stop service"
+        const val SOUND_FLAG = "sound"
+        const val NOTIFICATION_TITLE = "title"
+        const val NOTIFICATION_TEXT = "text"
+        const val NOTIFICATION_ID = 4321
     }
 }
