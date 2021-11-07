@@ -5,15 +5,17 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.IBinder
-import android.util.Log
 
 class BatteryService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val bool = intent.getBooleanExtra(SOUND_FLAG, false)
-        createNotificationChannel(intent.getBooleanExtra(SOUND_FLAG, false))
-        //TODO remove
-        Log.v("_TEST", "sound - $bool")
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        if (intent.action == ACTION_STOP_SERVICE) {
+            stopForeground(true)
+            stopSelf()
+        }
 
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
         val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(this)
@@ -21,51 +23,50 @@ class BatteryService : Service() {
 
         val pendingIntent: PendingIntent = stackBuilder.getPendingIntent(
             0,
-            PendingIntent.FLAG_CANCEL_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT
         )
         val title: String? = intent.getStringExtra(NOTIFICATION_TITLE)
         val text: String? = intent.getStringExtra(NOTIFICATION_TEXT)
 
-        val notification: Notification = Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("$title - $text")
-            .setSmallIcon(R.drawable.ic_battery_full)
-            .setContentIntent(pendingIntent)
-            .build()
-
-        startForeground(NOTIFICATION_ID, notification)
-        // on receiving stop service action intent
-        // from MainActivity onDestroy method
-        if (intent.action == ACTION_STOP_SERVICE) {
-            stopForeground(true)
-            stopSelf()
-            //TODO remove
-            Log.v("_TEST", "stop service")
-        }
-        return START_NOT_STICKY
-    }
-
-    private fun createNotificationChannel(isSoundOn: Boolean) {
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val audioAttributes = AudioAttributes.Builder()
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-            .build()
-
-        val notificationChannel = NotificationChannel(
-            CHANNEL_ID, "name",
-            NotificationManager.IMPORTANCE_LOW
-        )
+        val notification: Notification
+        val notificationChannel: NotificationChannel
+        val isSoundOn = intent.getBooleanExtra(SOUND_FLAG, false)
 
         if (isSoundOn) {
-            notificationChannel.importance = NotificationManager.IMPORTANCE_HIGH
-            notificationChannel.setSound(uri, audioAttributes)
+            notification = Notification.Builder(this, CHANNEL_ID_SOUND)
+                .setContentTitle("$title - $text")
+                .setSmallIcon(R.drawable.ic_battery_full)
+                .setContentIntent(pendingIntent)
+                .build()
+
+            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val audioAttributes = AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .build()
+
+            notificationChannel = NotificationChannel(
+                CHANNEL_ID_SOUND, "channel with sound",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+                .also { it.setSound(uri, audioAttributes) }
         } else {
-            notificationChannel.importance = NotificationManager.IMPORTANCE_LOW
+            notification = Notification.Builder(this, CHANNEL_ID_SILENT)
+                .setContentTitle("$title - $text")
+                .setSmallIcon(R.drawable.ic_battery_full)
+                .setContentIntent(pendingIntent)
+                .build()
+
+            notificationChannel = NotificationChannel(
+                CHANNEL_ID_SILENT, "silent channel",
+                NotificationManager.IMPORTANCE_LOW
+            )
         }
 
         notificationManager.createNotificationChannel(notificationChannel)
+        startForeground(NOTIFICATION_ID, notification)
+
+        return START_NOT_STICKY
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -73,7 +74,8 @@ class BatteryService : Service() {
     }
 
     companion object {
-        const val CHANNEL_ID = "channel id"
+        const val CHANNEL_ID_SOUND = "sound_channel"
+        const val CHANNEL_ID_SILENT = "silent_channel"
         const val ACTION_STOP_SERVICE = "stop service"
         const val SOUND_FLAG = "sound"
         const val NOTIFICATION_TITLE = "title"
