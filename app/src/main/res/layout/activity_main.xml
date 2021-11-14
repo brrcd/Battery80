@@ -7,21 +7,32 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/battery_status"
+        android:id="@+id/text_vibration_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:text="@string/battery_status"
+        android:layout_margin="@dimen/margin_large"
+        android:text="@string/vibration_on_off"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <TextView
-        android:id="@+id/battery_level"
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_vibration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:text="@string/battery_level"
-        app:layout_constraintStart_toEndOf="@id/battery_status"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_margin="@dimen/margin_large"
+        app:layout_constraintTop_toBottomOf="@id/text_vibration_switch"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_pick_ringtone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
+        android:text="@string/pick_ringtone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_vibration"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

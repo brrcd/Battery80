@@ -15,9 +15,9 @@ class BatteryBroadcastReceiver : BroadcastReceiver() {
     private var isCharging: Boolean? = null
     private var prevChargingState: Boolean? = null
 
-    override fun onReceive(context: Context, intent: Intent?) {
+    override fun onReceive(context: Context, intent: Intent) {
 
-        val status: Int = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+        val status: Int = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
 
         isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING
                 || status == BatteryManager.BATTERY_STATUS_FULL
@@ -27,7 +27,7 @@ class BatteryBroadcastReceiver : BroadcastReceiver() {
         }
         prevChargingState = isCharging
 
-        val batteryPct: Int? = intent?.let { it ->
+        val batteryPct: Int = intent.let { it ->
             val level: Int = it.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
             val scale: Int = it.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
             level * 100 / scale
@@ -39,7 +39,7 @@ class BatteryBroadcastReceiver : BroadcastReceiver() {
 
         //TODO filter intent to send only when percentage changes/charging on/off
 
-        if (isCharging!! && batteryPct == 80) {
+        if (isCharging!! && batteryPct >= 80) {
             serviceIntent.putExtra(SOUND_FLAG, true)
             isRestarting = true
         }

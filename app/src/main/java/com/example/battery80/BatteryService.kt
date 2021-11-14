@@ -4,7 +4,10 @@ import android.app.*
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.IBinder
+import android.util.Log
+import com.example.battery80.App.Companion.appContext
 
 class BatteryService : Service() {
 
@@ -39,7 +42,11 @@ class BatteryService : Service() {
                 .setContentIntent(pendingIntent)
                 .build()
 
-            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString()
+            val ringtonePref = appContext.getSharedPreferences(NOTIFICATION_RINGTONE, MODE_PRIVATE)
+            val vibrationPref = appContext.getSharedPreferences(NOTIFICATION_VIBRATION, MODE_PRIVATE)
+
+            val uri = Uri.parse(ringtonePref.getString(NOTIFICATION_RINGTONE, defaultRingtoneUri))
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -49,7 +56,10 @@ class BatteryService : Service() {
                 CHANNEL_ID_SOUND, "channel with sound",
                 NotificationManager.IMPORTANCE_HIGH
             )
-                .also { it.setSound(uri, audioAttributes) }
+                .also {
+                    it.setSound(uri, audioAttributes)
+                    it.enableVibration(vibrationPref.getBoolean(NOTIFICATION_VIBRATION, false))
+                }
         } else {
             notification = Notification.Builder(this, CHANNEL_ID_SILENT)
                 .setContentTitle("$title - $text")
@@ -79,6 +89,8 @@ class BatteryService : Service() {
         const val ACTION_STOP_SERVICE = "stop service"
         const val SOUND_FLAG = "sound"
         const val NOTIFICATION_TITLE = "title"
+        const val NOTIFICATION_RINGTONE = "ringtone"
+        const val NOTIFICATION_VIBRATION = "vibration"
         const val NOTIFICATION_TEXT = "text"
         const val NOTIFICATION_ID = 4321
     }
