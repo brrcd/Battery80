@@ -2,4 +2,7 @@
     <string name="app_name">Battery80</string>
     <string name="battery_status">Status</string>
     <string name="battery_level">0–100%</string>
+    <string name="vibration_on_off">Vibration on/off</string>
+    <string name="pick_ringtone">Pick ringtone</string>
+    <string name="notification_title_value">Charging to 80%</string>
 </resources>
