@@ -15,11 +15,6 @@ class BatteryService : Service() {
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        if (intent.action == ACTION_STOP_SERVICE) {
-            stopForeground(true)
-            stopSelf()
-        }
-
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
         val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(this)
         stackBuilder.addNextIntentWithParentStack(launchIntent)
@@ -75,6 +70,11 @@ class BatteryService : Service() {
 
         notificationManager.createNotificationChannel(notificationChannel)
         startForeground(NOTIFICATION_ID, notification)
+
+        if (intent.action == ACTION_STOP_SERVICE) {
+            stopForeground(true)
+            stopSelf()
+        }
 
         return START_NOT_STICKY
     }
