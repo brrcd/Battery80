@@ -5,4 +5,5 @@
     <string name="vibration_on_off">Vibration on/off</string>
     <string name="pick_ringtone">Pick ringtone</string>
     <string name="notification_title_value">Charging to 80%</string>
+    <string name="minimize_at_start">Minimize at start?</string>
 </resources>

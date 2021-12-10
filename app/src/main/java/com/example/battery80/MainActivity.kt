@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import com.example.battery80.App.Companion.appContext
 import com.example.battery80.BatteryService.Companion.ACTION_STOP_SERVICE
+import com.example.battery80.BatteryService.Companion.MINIMIZE_AT_START
 import com.example.battery80.BatteryService.Companion.NOTIFICATION_RINGTONE
 import com.example.battery80.BatteryService.Companion.NOTIFICATION_VIBRATION
 import com.example.battery80.databinding.ActivityMainBinding
@@ -27,6 +28,20 @@ class MainActivity : AppCompatActivity() {
 
         initVibrationSwitch()
         initRingtonePicker()
+        initMinimizeAtStartSwitch()
+    }
+
+    private fun initMinimizeAtStartSwitch() {
+        val preferences = getSharedPreferences(MINIMIZE_AT_START, MODE_PRIVATE)
+        if (preferences.getBoolean(MINIMIZE_AT_START, false)) {
+            this.moveTaskToBack(true)
+        }
+        binding.switchMinimizeAtStart.setOnCheckedChangeListener { _, isChecked ->
+            preferences.edit()
+                .putBoolean(MINIMIZE_AT_START, isChecked)
+                .apply()
+        }
+        binding.switchMinimizeAtStart.isChecked = preferences.getBoolean(MINIMIZE_AT_START, false)
     }
 
     // TODO notification sound picked instead of ringtones
@@ -72,6 +87,6 @@ class MainActivity : AppCompatActivity() {
         val stopIntent = Intent(appContext, BatteryService::class.java).also {
             it.action = ACTION_STOP_SERVICE
         }
-        startForegroundService(stopIntent)
+        stopService(stopIntent)
     }
 }

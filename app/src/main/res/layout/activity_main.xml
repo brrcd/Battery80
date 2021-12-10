@@ -14,7 +14,7 @@
         android:text="@string/vibration_on_off"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@id/text_minimize_at_start"/>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switch_vibration"
@@ -22,8 +22,27 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_large"
         app:layout_constraintTop_toBottomOf="@id/text_vibration_switch"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/text_vibration_switch"
+        app:layout_constraintEnd_toEndOf="@id/text_vibration_switch"/>
+
+    <TextView
+        android:id="@+id/text_minimize_at_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
+        android:text="@string/minimize_at_start"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_vibration_switch"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_minimize_at_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
+        app:layout_constraintTop_toBottomOf="@id/text_vibration_switch"
+        app:layout_constraintStart_toStartOf="@id/text_minimize_at_start"
+        app:layout_constraintEnd_toEndOf="@id/text_minimize_at_start"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_pick_ringtone"
@@ -31,8 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_large"
         android:text="@string/pick_ringtone"
+        android:textAllCaps="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/switch_vibration"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -93,5 +93,6 @@ class BatteryService : Service() {
         const val NOTIFICATION_VIBRATION = "vibration"
         const val NOTIFICATION_TEXT = "text"
         const val NOTIFICATION_ID = 4321
+        const val MINIMIZE_AT_START = "minimize_at_start"
     }
 }
